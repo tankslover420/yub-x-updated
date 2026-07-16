@@ -14,22 +14,22 @@
 
 // option for multiple returns in `lua_pcall' and `lua_call'
 
-    struct Shared
-    {
-        unsigned char gap_00[0x10]; /* offset 0 */
-        void* ScriptContext; /* offset 16 */
-        unsigned char gap_01[0x10]; /* offset 24 */
-    };
+struct Shared
+{
+    unsigned char gap_00[0x10]; /* offset 0 */
+    void* ScriptContext; /* offset 16 */
+};
+
 
     struct RobloxExtraSpace
     {
         unsigned char gap_00[0x18]; /* offset 0 */
         std::shared_ptr<Shared> SharedExtraSpace; /* offset 24 */
-        unsigned char gap_01[0x40]; /* offset 40 */
-        uint64_t Capabilities; /* offset 104 */
-        unsigned char gap_02[0x8]; /* offset 112 */
-        std::weak_ptr<uintptr_t> Script; // offset 120
-        uint64_t Identity; /* offset 136 */
+        unsigned char gap_01[0x8]; /* offset 40 */
+        std::weak_ptr<uintptr_t> Script; /* offset 48 */
+        uint64_t Capabilities; /* offset 64 */
+        unsigned char gap_02[0x30]; /* offset 72 */
+        uint64_t Identity; /* offset 120 */
     };
 
 #define LUA_MULTRET (-1)
@@ -508,19 +508,19 @@ LUA_API const char* lua_debugtrace(lua_State* L);
 
 struct lua_Debug
 {
-    void* userdata; /* offset 0 */
-    int linedefined; /* offset 8 */
-    int currentline; /* offset 12 */
-    unsigned char nupvals; /* offset 16 */
-    unsigned char isvararg; /* offset 17 */
-    unsigned char nparams; /* offset 18 */
-    unsigned char gap_00[0x5]; /* offset 19 */
+    const char* short_src; /* offset 0 */
+    const char* what; /* offset 8 */
+    const char* source; /* offset 16 */
     const char* name; /* offset 24 */
-    const char* short_src; /* offset 32 */
-    const char* source; /* offset 40 */
-    const char* what; /* offset 48 */
+    void* userdata; /* offset 32 */
+    int linedefined; /* offset 40 */
+    int currentline; /* offset 44 */
+    unsigned char nupvals; /* offset 48 */
+    unsigned char isvararg; /* offset 49 */
+    unsigned char nparams; /* offset 50 */
     char ssbuf[256]; /* offset 56 */
 };
+
 
 // }======================================================================
 
@@ -531,16 +531,16 @@ struct lua_Debug
  * can only be changed when the VM is not running any code */
 typedef struct lua_Callbacks
 {
-    void* userdata; /* offset 0 */
-    void (*debugbreak)(lua_State* L, lua_Debug* ar); /* offset 8 */
+    void* userdata;
+    void (*onallocate)(lua_State* L, size_t osize, size_t nsize); /* offset 8 */
     int16_t(*useratom)(lua_State* L, const char* s, size_t l); /* offset 16 */
-    void (*debugstep)(lua_State* L, lua_Debug* ar); /* offset 24 */
-    void (*debuginterrupt)(lua_State* L, lua_Debug* ar); /* offset 32 */
-    void (*interrupt)(lua_State* L, int gc); /* offset 40 */
-    void (*onallocate)(lua_State* L, size_t osize, size_t nsize); /* offset 48 */
+    void (*debuginterrupt)(lua_State* L, lua_Debug* ar); // GUESSED
+    void (*debugprotectederror)(lua_State* L); /* offset 32 */
+    void (*debugbreak)(lua_State* L, lua_Debug* ar); /* offset 40 */
+    void (*interrupt)(lua_State* L, int gc); /* offset 48 */
     void (*userthread)(lua_State* LP, lua_State* L); /* offset 56 */
-    void (*debugprotectederror)(lua_State* L); /* offset 64 */
-    void (*panic)(lua_State* L, int errcode); /* offset 72 */
+    void (*debugstep)(lua_State* L, lua_Debug* ar); // GUESSED
+    void (*panic)(lua_State* L, int errcode); // GUESSED
 } lua_Callbacks;
 
 typedef struct lua_Callbacks lua_Callbacks;

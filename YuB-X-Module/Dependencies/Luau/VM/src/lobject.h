@@ -16,9 +16,9 @@ typedef union GCObject GCObject;
 ** Common Header for all collectible objects (in macro form, to be included in other objects)
 */
 #define CommonHeader \
-    uint8_t memcat; /* offset 0 */ \
+    uint8_t marked; /* offset 0 */ \
     uint8_t tt; /* offset 1 */ \
-    uint8_t marked; /* offset 2 */
+    uint8_t memcat; /* offset 2 */
 
 /*
 ** Common header in struct form
@@ -289,21 +289,21 @@ typedef struct LuaNode LuaNode;
 struct LuaTable
 {
     CommonHeader; /* offset 0 */
-    unsigned char lsizenode; /* offset 3 */
-    unsigned char readonly; /* offset 4 */
+    unsigned char safeenv; /* offset 3 */
+    unsigned char lsizenode; /* offset 4 */
     unsigned char tmcache; /* offset 5 */
-    unsigned char nodemask8; /* offset 6 */
-    unsigned char safeenv; /* offset 7 */
+    unsigned char readonly; /* offset 6 */
+    unsigned char nodemask8; /* offset 7 */
     int sizearray; /* offset 8 */
     union /* offset 12 */
     {
         int lastfree; /* offset 0 */
         int aboundary; /* offset 0 */
     };
-    LuaTable* metatable; /* offset 16 */
-    GCObject* gclist; /* offset 24 */
-    TValue* array; /* offset 32 */
-    LuaNode* node; /* offset 40 */
+    LuaNode* node; /* offset 16 */
+    TValue* array; /* offset 24 */
+    LuaTable* metatable; /* offset 32 */
+    GCObject* gclist; /* offset 40 */
 };
 // clang-format on
 
@@ -315,6 +315,7 @@ struct Udata
     UDATA_META_ENC<struct LuaTable*> metatable; /* offset 8 */
     char data[1]; /* offset 16 */
 };
+
 
 typedef struct LuauBuffer
 {
@@ -352,43 +353,43 @@ struct FeedbackVectorSlot
 struct Proto
 {
     CommonHeader; /* offset 0 */
-    unsigned char flags; /* offset 3 */
-    unsigned char numparams; /* offset 4 */
-    unsigned char maxstacksize; /* offset 5 */
+    unsigned char maxstacksize; /* offset 3 */
+    unsigned char flags; /* offset 4 */
+    unsigned char is_vararg; /* offset 5 */
     unsigned char nups; /* offset 6 */
-    unsigned char is_vararg; /* offset 7 */
-    PROTO_DEBUGNAME_ENC<TString*> debugname; /* offset 8 */
-    void* execdata; /* offset 16 */
-    uintptr_t exectarget;
-    PROTO_LOCVARS_ENC<struct LocVar*> locvars; /* offset 32 */
-    GCObject* gclist; /* offset 40 */
-    PROTO_ABSLINEINFO_ENC<int*> abslineinfo; /* offset 48 */
-    PROTO_TYPEINFO_ENC<unsigned char*> typeinfo; /* offset 56 */
+    unsigned char numparams; /* offset 7 */
+    PROTO_UPVALUES_ENC<TString**> upvalues; /* offset 8 */
+    PROTO_SOURCE_ENC<TString*> source; /* offset 16 */
+    void* execdata; /* offset 24 */
+    uintptr_t exectarget; /* offset 32 */
+    TValue* k; /* offset 40 */
+    unsigned int* code; /* offset 48 */
+    PROTO_ABSLINEINFO_ENC<int*> abslineinfo; /* offset 56 */
     PROTO_LINEINFO_ENC<unsigned char*> lineinfo; /* offset 64 */
-    PROTO_UPVALUES_ENC<TString**> upvalues; /* offset 72 */
-    PROTO_USERDATA_ENC<void*> userdata; /* offset 80 */
+    PROTO_DEBUGNAME_ENC<TString*> debugname; /* offset 72 */
+    GCObject* gclist; /* offset 80 */
     PROTO_DEBUGINSN_ENC<unsigned char*> debuginsn; /* offset 88 */
-    TValue* k; /* offset 96 */
-    unsigned int* code; /* offset 104 */
-    Proto** p; /* offset 112 */
-    PROTO_SOURCE_ENC<TString*> source; /* offset 120 */
+    PROTO_LOCVARS_ENC<struct LocVar*> locvars; /* offset 96 */
+    Proto** p; /* offset 104 */
+    PROTO_USERDATA_ENC<void*> userdata; /* offset 112 */
+    PROTO_TYPEINFO_ENC<unsigned char*> typeinfo; /* offset 120 */
     unsigned int* codeentry; /* offset 128 */
-    int sizelineinfo; /* offset 136 */
-    int linedefined; /* offset 140 */
-    int sizecode; /* offset 144 */
-    int linegaplog2; /* offset 148 */
-    int bytecodeid; /* offset 152 */
-    int sizek; /* offset 156 */
-    int sizelocvars; /* offset 160 */
-    int sizep; /* offset 164 */
-    int sizetypeinfo; /* offset 168 */
-    int sizeupvalues; /* offset 172 */
+    int sizecode; /* offset 136 */
+    int sizeupvalues; /* offset 140 */
+    int sizelineinfo; /* offset 144 */
+    int sizek; /* offset 148 */
+    int sizetypeinfo; /* offset 152 */
+    int linegaplog2; /* offset 156 */
+    int bytecodeid; /* offset 160 */
+    int linedefined; /* offset 164 */
+    int sizelocvars; /* offset 168 */
+    int sizep; /* offset 172 */
     struct FeedbackVectorSlot* feedbackvec; /* offset 176 */
     int feedbackvecsize; /* offset 184 */
     int funid; /* offset 188 */
     Proto* optimized; /* offset 192 */
     Proto* deoptimized; /* offset 200 */
-    uint8_t padding[8];
+    uint64_t cost; /* offset 208 */
 };
 // clang-format on
 
@@ -436,10 +437,10 @@ typedef struct UpVal
 struct Closure
 {
     CommonHeader; /* offset 0 */
-    unsigned char isC; /* offset 3 */
-    unsigned char nupvalues; /* offset 4 */
-    unsigned char stacksize; /* offset 5 */
-    unsigned char preload; /* offset 6 */
+    unsigned char preload; /* offset 3 */
+    unsigned char stacksize; /* offset 4 */
+    unsigned char nupvalues; /* offset 5 */
+    unsigned char isC; /* offset 6 */
     GCObject* gclist;
     struct LuaTable* env; /* offset 16 */
     union /* offset 24 */

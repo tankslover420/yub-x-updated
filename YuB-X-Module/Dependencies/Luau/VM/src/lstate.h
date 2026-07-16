@@ -59,9 +59,9 @@ struct stringtable
 struct CallInfo
 {
     TValue* base; /* offset 0 */
-    TValue* func; /* offset 8 */
-    TValue* top; /* offset 16 */
-    Proto* p; /* offset 24 */
+    TValue* top; /* offset 8 */
+    Proto* p; /* offset 16 */
+    TValue* func; /* offset 24 */
     union /* offset 32 */
     {
         const Instruction* savedpc; /* offset 0 */
@@ -185,39 +185,37 @@ struct lua_UdataDirectAccessData
 struct global_State
 {
     struct stringtable strt; /* offset 0 */
-    lua_Alloc frealloc; /* offset 16 */
-    void* ud; /* offset 24 */
-    int gcstepsize; /* offset 32 */
-    int gcstepmul; /* offset 36 */
-    int gcgoal; /* offset 40 */
-    unsigned char gap_00[0x4]; /* offset 44 */
-    size_t GCthreshold; /* offset 48 */
-    size_t totalbytes; /* offset 56 */
-    unsigned char currentwhite; /* offset 64 */
-    unsigned char gcstate; /* offset 65 */
-    unsigned char gap_01[0x6]; /* offset 66 */
-    GCObject* weak; /* offset 72 */
-    GCObject* grayagain; /* offset 80 */
-    GCObject* gray; /* offset 88 */
-    lua_Page* sweepgcopage; /* offset 96 */
-    lua_Page* freegcopages[40]; /* offset 104 */
-    UpVal uvhead; /* offset 424 */
-    lua_Page* freepages[40]; /* offset 464 */
-    lua_State* mainthread; /* offset 784 */
-    lua_Page* allgcopages; /* offset 792 */
-    struct lua_Page* allpages;
-    LuaTable* mt[14]; /* offset 808 */
-    TString* tmname[21]; /* offset 920 */
-    TString* ttname[14]; /* offset 1088 */
-    TValue pseudotemp; /* offset 1200 */
-    TValue registry; /* offset 1216 */
-    int registryfree; /* offset 1232 */
+    size_t GCthreshold; /* offset 16 */
+    size_t totalbytes; /* offset 24 */
+    GCObject* gray; /* offset 32 */
+    GCObject* grayagain; /* offset 40 */
+    GCObject* weak; /* offset 48 */
+    int gcgoal; /* offset 56 */
+    int gcstepmul; /* offset 60 */
+    int gcstepsize; /* offset 64 */
+    unsigned char currentwhite; /* offset 68 */
+    unsigned char gcstate; /* offset 69 */
+    lua_Alloc frealloc; /* offset 72 */
+    void* ud; /* offset 80 */
+    lua_Page* allgcopages; /* offset 88 */
+    lua_State* mainthread; /* offset 96 */
+    lua_Page* sweepgcopage; /* offset 104 */
+    struct lua_Page* allpages; /* offset 112 */
+    UpVal uvhead; /* offset 120 */
+    lua_Page* freegcopages[40]; /* offset 160 */
+    lua_Page* freepages[40]; /* offset 480 */
+    LuaTable* mt[14]; /* offset 800 */
+    TString* ttname[14]; /* offset 912 */
+    TString* tmname[21]; /* offset 1024 */
+    TValue pseudotemp; /* offset 1192 */
+    TValue registry; /* offset 1208 */
+    int registryfree; /* offset 1224 */
     struct lua_jmpbuf* errorjmp;
-    unsigned __int64 rngstate; /* offset 1248 */
-    unsigned __int64 ptrenckey[4]; /* offset 1256 */
-    lua_Callbacks cb; /* offset 1288 */
-    lua_ExecutionCallbacks ecb; /* offset 1368 */
-    unsigned char ecbdata[512]; /* offset 1440 */
+    lua_Callbacks cb; /* offset 1240 */
+    unsigned __int64 ptrenckey[4]; /* offset 1320 */
+    unsigned __int64 rngstate; /* offset 1352 */
+    lua_ExecutionCallbacks ecb; /* offset 1360 */
+    alignas(16) unsigned char ecbdata[512]; /* offset 1440 */
     lua_UdataDirectAccessData udatadirect[130]; /* offset 1952 */
     size_t memcatbytes[256]; /* offset 11312 */
     void (*udatagc[128])(struct lua_State*, void*); /* offset 13360 */
@@ -243,25 +241,26 @@ struct lua_State
     unsigned char activememcat; /* offset 4 */
     bool singlestep; /* offset 5 */
     bool isactive; /* offset 6 */
-    TValue* stack; /* offset 8 */
-    global_State* global; /* offset 16 */
-    TValue* stack_last; /* offset 24 */
-    CallInfo* ci; /* offset 32 */
-    TValue* base; /* offset 40 */
-    TValue* top; /* offset 48 */
-    struct RobloxExtraSpace* userdata; /* offset 56 */
-    LuaTable* gt; /* offset 64 */
-    LSTATE_STACKSIZE_ENC<int> stacksize; /* offset 72 */
-    int size_ci; /* offset 76 */
-    UpVal* openupval;       // list of open upvalues in this stack
-    CallInfo* end_ci; /* offset 88 */
-    CallInfo* base_ci; /* offset 96 */
-    GCObject* gclist; /* offset 104 */
-    TString* namecall; /* offset 112 */
-    unsigned short nCcalls; /* offset 120 */
-    unsigned short baseCcalls; /* offset 122 */
-    unsigned int cachedslot; /* offset 124 */
+    UpVal* openupval; /* offset 8 */
+    GCObject* gclist; /* offset 16 */
+    TString* namecall; /* offset 24 */
+    unsigned short nCcalls; /* offset 32 */
+    unsigned short baseCcalls; /* offset 34 */
+    unsigned int cachedslot; /* offset 36 */
+    LSTATE_STACKSIZE_ENC<int> stacksize; /* offset 40 */
+    int size_ci; /* offset 44 */
+    LuaTable* gt; /* offset 48 */
+    CallInfo* end_ci; /* offset 56 */
+    CallInfo* base_ci; /* offset 64 */
+    TValue* stack_last; /* offset 72 */
+    CallInfo* ci; /* offset 80 */
+    TValue* stack; /* offset 88 */
+    global_State* global; /* offset 96 */
+    TValue* top; /* offset 104 */
+    TValue* base; /* offset 112 */
+    struct RobloxExtraSpace* userdata; /* offset 120 */
 };
+
 // clang-format on
 
 /*
